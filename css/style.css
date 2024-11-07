@@ -81,6 +81,13 @@ button {
   border-radius: 0.3em;
 }
 
+.text-noted {
+  color: #e9e9e9;
+  background-color: black;
+  padding: 0.2em 0.2em;
+  border-radius: 0.2em;
+}
+
 @media screen and (min-width: 28em) {
   section {
     display: grid;
