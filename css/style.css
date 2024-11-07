@@ -13,13 +13,18 @@ body {
   min-height: 100dvh;
 }
 
-nav {
+header {
   position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  padding: 1em;
   text-align: center;
+  z-index: 99;
+
+  nav {
+    padding: 1em;
+    backdrop-filter: blur(10px);
+  }
 
   .brand {
     font-weight: 800;
@@ -33,7 +38,7 @@ section {
   padding: 2em;
   flex-direction: column;
   flex: auto 1;
-  gap: 0em 2em;
+  gap: 0.5em 2em;
 
   .section-area {
     display: flex;
@@ -44,10 +49,36 @@ section {
 
 label {
   font-weight: 600;
+  text-transform: uppercase;
+}
+
+input {
+  padding: 1em 1.2em;
+  border: none;
+  background-color: #e9e9e9;
+  border-radius: 0.3em;
 }
 
 textarea {
   resize: vertical;
+}
+
+.hidden {
+  display: none;
+}
+
+.output-container {
+  overflow: auto;
+  /* background-color: #e9e9e9; */
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  color: #e9e9e9;
+  background-color: black;
+  padding: 0.5em 0.75em;
+  border-radius: 0.3em;
 }
 
 @media screen and (min-width: 28em) {
@@ -55,4 +86,29 @@ textarea {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.notification {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-text {
+  color: #e9e9e9;
+  background-color: black;
+  padding: 0.5em 0.75em;
+  border-radius: 0.3em;
+  margin-bottom: 0em;
+  opacity: 0;
+  transition: all 200ms ease-in-out;
+}
+
+.notification-text.show {
+  margin-bottom: 1em;
+  opacity: 1;
 }

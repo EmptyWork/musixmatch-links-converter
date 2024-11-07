@@ -19,62 +19,90 @@
             <div class="brand">
                 EmptyWork
             </div>
-            <span>A tools to extract musixmatch links <br /> to the correct link</span>
+            <span>A tool to extract musixmatch links <br /> to the correct link</span>
         </nav>
     </header>
     <section>
         <div class="section-area">
             <label for="input">Input</label>
-            <input id="input" type="text">
+            <br />
+            <input placeholder="Copy the code in here" id="input" type="text" autocomplete="off">
+            <span>Note: Please copy the <strong>text twice.</strong></span>
         </div>
-        <div class="section-area">
-            <label for="output">Ouput</label>
-            <textarea name="output" id="output" readonly></textarea>
+        <div class="section-area" style="flex: auto 1">
+            <div style="display: flex; align-items: center; gap: 1em;">
+                <label for="output">Ouput</label>
+                <button class="hidden" id="copy">Copy text to clipboard</button>
+            </div>
+            <br />
+            <!-- <textarea name="output" id="output" readonly></textarea> -->
+            <div class="output-container">
+                <div id="output"></div>
+            </div>
         </div>
     </section>
-    <footer></footer>
+    <div class="notification">
+        <div class="notification-text" id="notification">
+            Text copied to clipboard
+        </div>
+    </div>
 </body>
+<script src="/js/jsonviewer.js"></script>
+
 <script>
+    const getDevelopmentStatus = () => {
+        return (location.hostname == "127.0.0.1") ? true : false
+    }
     const inputElement = document.querySelector("#input")
     const outputElement = document.querySelector("#output")
+    const copyElement = document.querySelector("#copy")
+    const notificationElement = document.querySelector("#notification")
+    const isDevelopment = getDevelopmentStatus()
 
     inputElement.addEventListener("paste", e => {
-        inputHandler(e)
-        inputHandler(e)
+        setTimeout(inputHandler(e), 100)
     })
 
-    outputElement.addEventListener("click", e => {
-        outputElement.select();
-        outputElement.setSelectionRange(0, 99999);
+    copyElement.addEventListener("click", e => {
         navigator.clipboard.writeText(outputElement.value);
+        console.log(outputElement.value)
+        console.log(notificationElement.classList)
+        if (!notificationElement.classList.contains("show")) {
+            notificationElement.classList.add("show")
+            setTimeout(() => {
+                notificationElement.classList.remove("show")
+            }, 2000)
+        }
     })
 
     const inputHandler = (event) => {
         let value = event.target.value
         parse = JSON.parse(value)
 
+        new JsonViewer({ value: tracksSourceReplace(parse) }).render('#output')
+        copyElement.classList.remove('hidden');
         outputElement.value = JSON.stringify(tracksSourceReplace(parse))
     }
 
     const tracksSourceReplace = (tracks) => {
         tracks.forEach(track => {
-            let trackUri = track.actionURI
+            let trackUri = track.actionURI ?? ""
             let convertedUri
             if (trackUri.includes("track_applemusic_id")) {
                 convertedUri = changeURItoApple(trackUri)
-                // console.log(`this is an apple song ${track.trackTitle}`)
+                if (isDevelopment) console.log(`this is apple song ${track.trackTitle}`)
                 track.appleLink = convertedUri
             }
             if (trackUri.includes("track_spotify_id")) {
                 convertedUri = changeURItoSpotify(trackUri)
-                // console.log(`this is spotify song ${track.trackTitle}`)
+                if (isDevelopment) console.log(`this is spotify song ${track.trackTitle}`)
                 track.spotifyLink = convertedUri
             }
 
             delete track.actionURI
         })
 
-        // console.table(tracks)
+        if (isDevelopment) console.table(tracks)
         return tracks
     }
 
