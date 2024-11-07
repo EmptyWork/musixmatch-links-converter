@@ -47,7 +47,7 @@ section {
   }
 }
 
-label {
+label.main {
   font-weight: 600;
   text-transform: uppercase;
 }
