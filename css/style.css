@@ -1,0 +1,58 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Rubik", serif;
+  display: flex;
+  line-height: 1.5;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1em;
+  text-align: center;
+
+  .brand {
+    font-weight: 800;
+    font-size: 1.4em;
+    text-transform: uppercase;
+  }
+}
+
+section {
+  display: flex;
+  padding: 2em;
+  flex-direction: column;
+  flex: auto 1;
+  gap: 0em 2em;
+
+  .section-area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+label {
+  font-weight: 600;
+}
+
+textarea {
+  resize: vertical;
+}
+
+@media screen and (min-width: 28em) {
+  section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musixmatch Link Extractor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="brand">
+                EmptyWork
+            </div>
+            <span>A tools to extract musixmatch links <br /> to the correct link</span>
+        </nav>
+    </header>
+    <section>
+        <div class="section-area">
+            <label for="input">Input</label>
+            <input id="input" type="text">
+        </div>
+        <div class="section-area">
+            <label for="output">Ouput</label>
+            <textarea name="output" id="output" readonly></textarea>
+        </div>
+    </section>
+    <footer></footer>
+</body>
+<script>
+    const inputElement = document.querySelector("#input")
+    const outputElement = document.querySelector("#output")
+
+    inputElement.addEventListener("paste", e => {
+        inputHandler(e)
+        inputHandler(e)
+    })
+
+    outputElement.addEventListener("click", e => {
+        outputElement.select();
+        outputElement.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(outputElement.value);
+    })
+
+    const inputHandler = (event) => {
+        let value = event.target.value
+        parse = JSON.parse(value)
+
+        outputElement.value = JSON.stringify(tracksSourceReplace(parse))
+    }
+
+    const tracksSourceReplace = (tracks) => {
+        tracks.forEach(track => {
+            let trackUri = track.actionURI
+            let convertedUri
+            if (trackUri.includes("track_applemusic_id")) {
+                convertedUri = changeURItoApple(trackUri)
+                // console.log(`this is an apple song ${track.trackTitle}`)
+                track.appleLink = convertedUri
+            }
+            if (trackUri.includes("track_spotify_id")) {
+                convertedUri = changeURItoSpotify(trackUri)
+                // console.log(`this is spotify song ${track.trackTitle}`)
+                track.spotifyLink = convertedUri
+            }
+
+            delete track.actionURI
+        })
+
+        // console.table(tracks)
+        return tracks
+    }
+
+    const changeURItoSpotify = (uri) => {
+        let spotifyRegex
+        if (uri.includes("track_applemusic_id")) {
+            spotifyRegex = /mxm:\/\/match\/\?commontrack_id=\d+&track_applemusic_id=\d+&track_spotify_id=/i
+        } else {
+            spotifyRegex = /mxm:\/\/match\/\?commontrack_id=\d+&track_spotify_id=/i
+        }
+        return uri.replace(spotifyRegex, "https://open.spotify.com/track/")
+    }
+
+    const changeURItoApple = (uri) => {
+        const appleRegex = /mxm:\/\/match\/\?commontrack_id=\d+&track_applemusic_id=/i
+        const appleAfterRegex = /&[a-z_=A-Z0-9]*/i
+        uri = uri.replace(appleRegex, "https://open.spotify.com/track/")
+        uri = uri.replace(appleAfterRegex, " ")
+
+        return uri
+    }
+</script>
+
+</html>
