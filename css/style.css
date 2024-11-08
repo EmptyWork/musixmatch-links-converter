@@ -82,6 +82,7 @@ button {
 }
 
 .text-noted {
+  font-size: 0.8em;
   color: #e9e9e9;
   background-color: black;
   padding: 0.2em 0.2em;
@@ -118,4 +119,23 @@ button {
 .notification-text.show {
   margin-bottom: 1em;
   opacity: 1;
+}
+
+.settings {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+input[type="checkbox"] > label {
+  cursor: pointer;
+}
+
+.post-text {
+  user-select: none;
+  font-size: 0.7em;
+  border-radius: 0.3em;
+  padding: 0.1em 0.45em;
+  color: #cecece;
+  border: #cecece 1px solid;
 }
