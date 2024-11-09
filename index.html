@@ -49,6 +49,12 @@
                 <label for="enableAppleMusic">Enable the apple music links</label>
                 <span class="post-text">BETA</span>
             </div>
+            <div class="settings">
+                <input type="checkbox" name="enableNewSeperator" id="enableNewSeperator" value="true">
+                <label for="enableNewSeperator">Disable comma <code>,</code> as the seperator (for excel newer than
+                    2016)</label>
+                <span class="post-text">BETA</span>
+            </div>
         </div>
         <div class="section-area" style="flex: auto 1">
             <div style="display: flex; align-items: center; gap: 1em;">
@@ -62,7 +68,7 @@
             <br />
             <div class="output-container">
                 <div id="output">No data process</div>
-                <div style="display: none;" id="outputCsv">No data process</div>
+                <div class="hidden" id="outputCsv">No data process</div>
             </div>
         </div>
     </section>
@@ -90,6 +96,7 @@
         return (location.hostname == "127.0.0.1") ? true : false
     }
 
+    const currentDate = new Date()
     const inputElement = document.querySelector("#input")
     const outputElement = document.querySelector("#output")
     const outputCSVElement = document.querySelector("#outputCsv")
@@ -98,6 +105,7 @@
     const notificationElement = document.querySelector("#notification")
     const notificationAreaElement = document.querySelector("#notificationArea")
     const enableAppleMusicLinksElement = document.querySelector("#enableAppleMusic")
+    const enableNewSeperatorElement = document.querySelector("#enableNewSeperator")
     const isDevelopment = getDevelopmentStatus()
 
     inputElement.addEventListener("paste", e => {
@@ -113,8 +121,8 @@
     })
 
     downloadElement.addEventListener("click", e => {
-        console.log("test")
-        downloadCSV(outputCSVElement.value, "test.csv")
+        let currentTime = `${currentDate.getDate()} - ${currentDate.getMonth()}`
+        downloadCSV(outputCSVElement.value, `Data ${currentTime} [Mission].csv`)
         if (selectNotificationWithID("download-file") == null)
             createNotificationText("download-file", "Downloading file, please wait")
     })
@@ -145,6 +153,8 @@
 
     const inputHandler = (event) => {
         let value = event.target.value
+        let text = ""
+        let enableNewSeperator = enableNewSeperatorElement.checked ?? false
         parsedData = JSON.parse(value)
 
         new JsonViewer({ value: tracksSourceReplace(parsedData) }).render('#output')
@@ -155,7 +165,9 @@
         csvParsedData = csvParser.parse(processedData)
 
         outputElement.value = JSON.stringify(processedData)
-        outputCSVElement.value = csvParsedData
+        // outputCSVElement.value = csvParsedData
+        if (!enableNewSeperator) text = "sep=, \n"
+        outputCSVElement.value = `${text}${csvParsedData}`
     }
 
     const tracksSourceReplace = (tracks) => {
