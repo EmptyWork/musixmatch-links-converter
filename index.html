@@ -16,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/json2csv"></script>
+
 </head>
 
 <body>
@@ -55,10 +57,12 @@
                     <span>(JSON)</span>
                 </div>
                 <button class="hidden" id="copy">Copy text to clipboard</button>
+                <button class="hidden" id="download">Download as CSV</button>
             </div>
             <br />
             <div class="output-container">
                 <div id="output">No data process</div>
+                <div style="display: none;" id="outputCsv">No data process</div>
             </div>
         </div>
     </section>
@@ -69,12 +73,28 @@
 <script src="/js/jsonviewer.js"></script>
 
 <script>
+    const { Parser } = json2csv
+    const csvParser = new Parser()
+
+    const downloadCSV = (csv, filename) => {
+        const csvFile = new Blob([csv], { type: 'text/csv' })
+        const downloadLink = document.createElement("a")
+        downloadLink.download = filename
+        downloadLink.href = window.URL.createObjectURL(csvFile)
+        downloadLink.style.display = "none"
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+    }
+
     const getDevelopmentStatus = () => {
         return (location.hostname == "127.0.0.1") ? true : false
     }
+
     const inputElement = document.querySelector("#input")
     const outputElement = document.querySelector("#output")
+    const outputCSVElement = document.querySelector("#outputCsv")
     const copyElement = document.querySelector("#copy")
+    const downloadElement = document.querySelector("#download")
     const notificationElement = document.querySelector("#notification")
     const notificationAreaElement = document.querySelector("#notificationArea")
     const enableAppleMusicLinksElement = document.querySelector("#enableAppleMusic")
@@ -87,9 +107,16 @@
     })
 
     copyElement.addEventListener("click", e => {
-        navigator.clipboard.writeText(outputElement.value);
+        navigator.clipboard.writeText(outputElement.value)
         if (selectNotificationWithID("code-copy") == null)
             createNotificationText("code-copy", "Text copied to clipboard")
+    })
+
+    downloadElement.addEventListener("click", e => {
+        console.log("test")
+        downloadCSV(outputCSVElement.value, "test.csv")
+        if (selectNotificationWithID("download-file") == null)
+            createNotificationText("download-file", "Downloading file, please wait")
     })
 
     const selectNotificationWithID = (id) => {
@@ -100,29 +127,35 @@
         const notificationContainer = document.createElement('div')
         notificationContainer.classList.add("notification-text")
         notificationContainer.innerText = text
-        notificationContainer.setAttribute("notification-id", id);
+        notificationContainer.setAttribute("notification-id", id)
 
         notificationAreaElement.appendChild(notificationContainer)
 
-        showNotification(notificationContainer);
+        showNotification(notificationContainer)
     }
 
     const showNotification = async (elem) => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-        elem.classList.add("show");
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        elem.classList.remove("show");
-        await new Promise(resolve => setTimeout(resolve, 500));
-        elem.remove();
+        await new Promise(resolve => setTimeout(resolve, 0))
+        elem.classList.add("show")
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        elem.classList.remove("show")
+        await new Promise(resolve => setTimeout(resolve, 500))
+        elem.remove()
     }
 
     const inputHandler = (event) => {
         let value = event.target.value
-        parse = JSON.parse(value)
+        parsedData = JSON.parse(value)
 
-        new JsonViewer({ value: tracksSourceReplace(parse) }).render('#output')
-        copyElement.classList.remove('hidden');
-        outputElement.value = JSON.stringify(tracksSourceReplace(parse))
+        new JsonViewer({ value: tracksSourceReplace(parsedData) }).render('#output')
+        copyElement.classList.remove('hidden')
+        downloadElement.classList.remove('hidden')
+
+        processedData = tracksSourceReplace(parsedData)
+        csvParsedData = csvParser.parse(processedData)
+
+        outputElement.value = JSON.stringify(processedData)
+        outputCSVElement.value = csvParsedData
     }
 
     const tracksSourceReplace = (tracks) => {
