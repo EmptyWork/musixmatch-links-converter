@@ -188,6 +188,15 @@
             }
 
             delete track.actionURI
+            delete track.rank
+            delete track.resourceId
+            delete track.id
+            delete track.destinationLanguage
+            delete track.missionId
+            delete track.trackLanguage
+            delete track.trackLength
+            delete track.hasLyrics
+            delete track.hasSync
         })
 
         if (isDevelopment) console.table(tracks)
