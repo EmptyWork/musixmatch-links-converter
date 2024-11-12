@@ -129,6 +129,7 @@ code {
   gap: 0.5em;
   align-items: center;
   line-height: 1;
+  margin-bottom: 1em;
 
   label,
   input {
