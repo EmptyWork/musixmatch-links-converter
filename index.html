@@ -77,6 +77,7 @@
     <!-- <div class="feedback">Create by Emptywork</div> -->
 </body>
 <script src="/js/jsonviewer.js"></script>
+<script src="/js/externalLibrary.js"></script>
 
 <script>
     const { Parser } = json2csv
@@ -121,8 +122,8 @@
     })
 
     downloadElement.addEventListener("click", e => {
-        let currentTime = `${currentDate.getDate()} - ${currentDate.getMonth()}`
-        downloadCSV(outputCSVElement.value, `Data ${currentTime} [Mission].csv`)
+        let currentTime = `${getReadableMonthName(currentDate.getMonth())} ${currentDate.getDate()}`
+        downloadCSV(outputCSVElement.value, `[Mission] Data for ${currentTime}.csv`)
         if (selectNotificationWithID("download-file") == null)
             createNotificationText("download-file", "Downloading file, please wait")
     })
